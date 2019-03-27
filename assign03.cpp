@@ -63,65 +63,47 @@ void insertion_sort(){
     }
 }
 void merge_sort(vector<int> arr, int left, int right){
-    cout<<"merge sort start!"<<'\n';
+//    cout<<"merge sort start!"<<'\n';
     if(left<right){
         int mid = (left+right)/2;
-        cout<<"mid: "<<mid<<'\n';
         merge_sort(arr, left, mid);
         merge_sort(arr, mid+1, right);
         merge(data, left, mid, right);
     }
 }
 void merge(vector<int> arr, int left, int mid, int right){
-    cout<<"merge start!"<<'\n';
+//    cout<<"merge start!"<<'\n';
     vector<int> sortedData;
     int i=left;
     int j=mid+1;
     int k=left;
 
-    cout<<"i: "<<i<<'\n';
-    cout<<"j: "<<j<<'\n';
-    cout<<"k: "<<k<<'\n';
-    cout<<"left: "<<left<<'\n';
-    cout<<"mid: "<<mid<<'\n';
-    cout<<"right: "<<right<<'\n';
     while(i<=mid && j<=right){
-        cout<<"start while!"<<'\n';
-        cout<<"arr["<<i<<"]: "<<arr.at(i)<<'\n';
-        cout<<"arr["<<j<<"]: "<<arr.at(j)<<'\n';
         if(arr.at(i)<=arr.at(j)){
-            cout<<"check first if!"<<'\n';
             sortedData.push_back(arr.at(i++));
         }
         else{
-            cout<<"check second if!"<<'\n';
             sortedData.push_back(arr.at(j++));
         }
-        cout<<"sortedData[0]: "<<sortedData.at(0)<<'\n';
     }
     // front array done
     if(i>mid){
-        cout<<"!start first if!"<<'\n';
         for(int l=j; l<=right; l++)
             sortedData.push_back(arr.at(l));
     }
     // back array done
     else if(j>right){
-        cout<<"!start second if!"<<'\n';
         for(int l=i; l<=mid; l++)
             sortedData.push_back(arr.at(l));
     }
-    cout<<"sortedData[1]: "<<sortedData.at(1)<<'\n';
-    cout<<"sortedData: "<<" ";
     for(int l=left; l<=right; l++){
-        cout<<sortedData.at(l-left)<<" ";
         data[l] = sortedData.at(l-left);
     }
-    cout<<'\n';
-    cout<<"data: "<<" ";
+/*  print data 
     for(auto it=data.begin(); it!=data.end(); ++it)
         cout<<*it<<" ";
-    cout<<'\n';
+        cout<<'\n';
+*/
 }
 void quick_sort_last(vector<int> arr, int left, int right){
     if(left<right){
