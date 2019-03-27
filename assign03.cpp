@@ -17,8 +17,71 @@ int partition_first_pivot(int left, int right);
 int partition_random_pivot(int left, int right);
 
 void print_result() {
-    for(int i=0; i<9; i++){
+
+    cout<<"        \tRandom1000";
+
+    cout<<"    Reverse1000";
+
+    cout<<"    Random10000";
+
+    cout<<"    Reverse10000";
+
+    cout<<"    Random100000";
+
+    cout<<"    Reverse100000"<<'\n';
+    int i;
+    for(i=0; i<7; i++){
+        cout.flags(ios::right);
+        if(i==0){
+            cout.width(15);
+            cout<<"Bubble sort";
+        }
+        else if(i==1){
+            cout.width(15);
+            cout<<"Selection sort";
+        }
+        else if(i==2){
+            cout.width(15);
+            cout<<"Insertion sort";
+        }
+        else if(i==3){
+            cout.width(15);
+            cout<<"Merge";
+        }
+        else if(i==4){
+            cout.width(15);
+            cout<<"Quick1";
+        }
+        else if(i==5){
+            cout.width(15);
+            cout<<"Quick2"; 
+        }
+        else if(i==6){
+            cout.width(15);
+            cout<<"Quick3";                    
+        }
+        //cout<<"Bubble Sort";
+        /*
+        switch (i){
+            cout.flags(ios::right);
+            case 0: cout<<"Bubble sort";
+            cout.flags(ios::right);
+            case 1: cout<<"Selection sort";
+            cout.flags(ios::right);
+            case 2: cout<<"Insertion sort";
+            cout.flags(ios::right);
+            case 3: cout<<"Merge";
+            cout.flags(ios::right);
+            case 4: cout<<"Quick1";
+            cout.flags(ios::right);
+            case 5: cout<<"Quick2";
+            cout.flags(ios::right);
+            case 6: cout<<"Quick3";
+        }
+        */
+        
         for(int j=0; j<6; j++){
+            cout.width(10);
             cout<<runningTime[i][j]<<"sec ";
         }
         cout<<'\n';
