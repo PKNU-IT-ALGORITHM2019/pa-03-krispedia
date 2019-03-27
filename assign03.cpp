@@ -6,8 +6,11 @@
 
 using namespace std;
 
-int N = 100;
+int N = 10;
 vector<int> data;
+
+void merge(vector<int> data, int p, int q, int r);
+int partition_last_pivot(vector<int> arr, int left, int right);
 
 void swap(int index1, int index2){
     int temp = data.at(index1);
@@ -59,15 +62,88 @@ void insertion_sort(){
         data.at(locIndex) = temp;
     }
 }
-void merge(){
-
+void merge_sort(vector<int> arr, int left, int right){
+    cout<<"merge sort start!"<<'\n';
+    if(left<right){
+        int mid = (left+right)/2;
+        cout<<"mid: "<<mid<<'\n';
+        merge_sort(arr, left, mid);
+        merge_sort(arr, mid+1, right);
+        merge(data, left, mid, right);
+    }
 }
-void merge_sort(){
+void merge(vector<int> arr, int left, int mid, int right){
+    cout<<"merge start!"<<'\n';
+    vector<int> sortedData;
+    int i=left;
+    int j=mid+1;
+    int k=left;
 
+    cout<<"i: "<<i<<'\n';
+    cout<<"j: "<<j<<'\n';
+    cout<<"k: "<<k<<'\n';
+    cout<<"left: "<<left<<'\n';
+    cout<<"mid: "<<mid<<'\n';
+    cout<<"right: "<<right<<'\n';
+    while(i<=mid && j<=right){
+        cout<<"start while!"<<'\n';
+        cout<<"arr["<<i<<"]: "<<arr.at(i)<<'\n';
+        cout<<"arr["<<j<<"]: "<<arr.at(j)<<'\n';
+        if(arr.at(i)<=arr.at(j)){
+            cout<<"check first if!"<<'\n';
+            sortedData.push_back(arr.at(i++));
+        }
+        else{
+            cout<<"check second if!"<<'\n';
+            sortedData.push_back(arr.at(j++));
+        }
+        cout<<"sortedData[0]: "<<sortedData.at(0)<<'\n';
+    }
+    // front array done
+    if(i>mid){
+        cout<<"!start first if!"<<'\n';
+        for(int l=j; l<=right; l++)
+            sortedData.push_back(arr.at(l));
+    }
+    // back array done
+    else if(j>right){
+        cout<<"!start second if!"<<'\n';
+        for(int l=i; l<=mid; l++)
+            sortedData.push_back(arr.at(l));
+    }
+    cout<<"sortedData[1]: "<<sortedData.at(1)<<'\n';
+    cout<<"sortedData: "<<" ";
+    for(int l=left; l<=right; l++){
+        cout<<sortedData.at(l-left)<<" ";
+        data[l] = sortedData.at(l-left);
+    }
+    cout<<'\n';
+    cout<<"data: "<<" ";
+    for(auto it=data.begin(); it!=data.end(); ++it)
+        cout<<*it<<" ";
+    cout<<'\n';
 }
-void quick_sort_last_pivot(){
-    int pivot = data.at(data.size()-1);
+void quick_sort_last(vector<int> arr, int left, int right){
+    if(left<right){
+        int pivot = partition_last_pivot(arr, left, right);
+        quick_sort_last(arr, left, pivot-1);
+        quick_sort_last(arr, pivot+1, right);
+    }
+}
+int partition_last_pivot(vector<int> arr, int left, int right){
+    int i=left-1;
+    //int j=left;
 
+    int check = data.at(right);
+
+    for(int j=left; j<right; j++){
+        if(arr.at(j)<check){
+            i++;
+            swap(i, j);
+        }
+    }
+    swap(i+1, right);
+    return i+1;
 }
 void quick_sort_first_pivot(){
     int pivot = data.at(0);
@@ -122,7 +198,8 @@ int main(void) {
         cout<<*it<<" ";
     cout<<'\n';
 
-    bubble_sort();
+    merge_sort(data, 0, data.size()-1);
+//    quick_sort_last(data, 0, data.size()-1);
 
     for(auto it=data.begin(); it!=data.end(); ++it)
         cout<<*it<<" ";
