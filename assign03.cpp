@@ -6,19 +6,22 @@
 
 using namespace std;
 
-int N[3] = {10, 10000, 100000};
-double runningTime[9][6] ={0.0};
+int N[3] = {500, 10000, 100000};
+double runningTime[9][6] = {0.0};
+vector<double> randomTime(10,0);
+vector<double> randomTime_origin(10,0);
 vector<int> data;
 vector<int> data_origin;
 
 void merge(vector<int> data, int p, int q, int r);
 int partition_last_pivot(int left, int right);
+int partition_median_pivot(int left, int right);
 int partition_first_pivot(int left, int right);
 int partition_random_pivot(int left, int right);
 
 void print_result() {
 
-    cout<<"        \tRandom1000";
+    cout<<"            \tRandom1000";
 
     cout<<"    Reverse1000";
 
@@ -32,34 +35,20 @@ void print_result() {
     int i;
     for(i=0; i<7; i++){
         cout.flags(ios::right);
-        if(i==0){
-            cout.width(15);
-            cout<<"Bubble sort";
-        }
-        else if(i==1){
-            cout.width(15);
+        if(i==0)
+            cout<<"   Bubble sort";
+        else if(i==1)
             cout<<"Selection sort";
-        }
-        else if(i==2){
-            cout.width(15);
+        else if(i==2)
             cout<<"Insertion sort";
-        }
-        else if(i==3){
-            cout.width(15);
-            cout<<"Merge";
-        }
-        else if(i==4){
-            cout.width(15);
-            cout<<"Quick1";
-        }
-        else if(i==5){
-            cout.width(15);
-            cout<<"Quick2"; 
-        }
-        else if(i==6){
-            cout.width(15);
-            cout<<"Quick3";                    
-        }
+        else if(i==3)
+            cout<<"\t Merge";
+        else if(i==4)
+            cout<<"\tQuick1";
+        else if(i==5)
+            cout<<"\tQuick2"; 
+        else if(i==6)
+            cout<<"\tQuick3";                    
         //cout<<"Bubble Sort";
         /*
         switch (i){
@@ -81,7 +70,7 @@ void print_result() {
         */
         
         for(int j=0; j<6; j++){
-            cout.width(10);
+            cout.width(12);
             cout<<runningTime[i][j]<<"sec ";
         }
         cout<<'\n';
@@ -204,21 +193,34 @@ int partition_last_pivot(int left, int right){
 
     return i+1;
 }
-/*
-void quick_sort_first(int left, int right){
+void quick_sort_median(int left, int right){
     if(left<right){
-        int pivot = partition_first_pivot(left, right);
+        int pivot = partition_median_pivot(left, right);
         quick_sort_last(left, pivot-1);
         quick_sort_last(pivot+1, right);
     }
     
 }
-int partition_first_pivot(int left, int right){
+int get_median(){
+    int mediumIndex = data.size()/2;
+    int lastIndex = data.size()-1;
+//    cout<<"mediumIndex: "<<mediumIndex<<'\n';
+    if((data.at(0)>data.at(mediumIndex) && data.at(0)<data.at(lastIndex)) || (data.at(0)<data.at(mediumIndex) && data.at(0)>data.at(lastIndex)))
+        return 0;
+    else if((data.at(0)<data.at(mediumIndex) && data.at(mediumIndex)<data.at(lastIndex)) || (data.at(0)>data.at(mediumIndex) && data.at(mediumIndex)>data.at(lastIndex)))
+        return mediumIndex;
+    else
+        return lastIndex;
+}
+int partition_median_pivot(int left, int right){
 //    cout<<"partition start!"<<'\n';
     int i=left-1;
     //int j=left;
 
-    int check = data.at(left);
+    int checkIndex = get_median();
+    swap(checkIndex, right);
+
+    int check = data.at(right);
 
     for(int j=left; j<right; j++){
         if(data.at(j)<check){
@@ -244,8 +246,10 @@ int partition_random_pivot(int left, int right){
     //int j=left;
 
     srand((unsigned) time(NULL));
-    int checkIndex = left + rand()%(right-left)+1;
-    int check = data.at(checkIndex);
+    int checkIndex = rand()%(right-left+1);
+    swap(checkIndex, right);
+
+    int check = data.at(right);
 
     for(int j=left; j<right; j++){
         if(data.at(j)<check){
@@ -257,7 +261,7 @@ int partition_random_pivot(int left, int right){
 
     return i+1;
 }
-*/
+
 void generateRandomData(int N){
     srand((unsigned int) time(NULL));
     data_origin.clear();
@@ -273,111 +277,179 @@ void generateReversedData(int N){
         data_origin.push_back(N-i);
     }
 }
+void printData(){
+    for(auto it=data.begin(); it!=data.end(); ++it)
+        cout<<*it<<" ";
+    cout<<'\n';    
+}
+void addRunningTime(double time){
 
+}
+void saveRunningTime(int row, int col, double time){
+    runningTime[row][col] = time;
+}
+void runSort(int i, int j) {
+
+    cout<<"randomTime_origin"<<'\n';
+    for(auto it=randomTime_origin.begin(); it!=randomTime_origin.end(); ++it)
+        cout<<*it<<" ";
+    cout<<'\n';
+    cout<<"randomTime"<<'\n';
+    for(auto it=randomTime.begin(); it!=randomTime.end(); ++it)
+        cout<<*it<<" ";
+    cout<<'\n';
+
+
+    clock_t start, end; 
+    
+    data.resize(data_origin.size());
+                        
+    copy(data_origin.begin(), data_origin.end(), data.begin());
+    printData();
+    start = clock();
+    cout<<"bubble sort"<<'\n';
+    bubble_sort();
+    end = clock();
+    double resultTime = (double)(end-start)/CLOCKS_PER_SEC;
+    if(j == 0){
+        double temp = resultTime;
+        cout<<"resultTIME: "<<resultTime<<'\n';
+        resultTime += randomTime.at(0);
+        randomTime.at(0) += temp;
+    }
+    saveRunningTime(0,(i+1)*(j+1)-1, resultTime);
+    //runningTime[0][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
+    printData();
+
+    copy(data_origin.begin(), data_origin.end(), data.begin());
+    printData();
+    start = clock();
+    cout<<"selection sort"<<'\n';
+    selection_sort();
+    end = clock();
+    resultTime = (double)(end-start)/CLOCKS_PER_SEC;
+    if(j == 0){
+        double temp = resultTime;
+        resultTime += randomTime.at(1);
+        randomTime.at(1) += temp;
+    }
+    saveRunningTime(1,(i+1)*(j+1)-1,resultTime);
+    //runningTime[1][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
+    printData();
+
+    copy(data_origin.begin(), data_origin.end(), data.begin());
+    printData();           
+    start = clock();
+    cout<<"insertion sort"<<'\n';
+    insertion_sort();
+    end = clock();
+    resultTime = (double)(end-start)/CLOCKS_PER_SEC;
+    if(j == 0){
+        double temp = resultTime;
+        resultTime += randomTime.at(2);
+        randomTime.at(2) += temp;
+    }
+    saveRunningTime(2,(i+1)*(j+1)-1,resultTime);
+    //runningTime[2][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
+    printData();
+
+    copy(data_origin.begin(), data_origin.end(), data.begin());
+    printData();          
+    start = clock();
+    cout<<"merge sort"<<'\n';
+    merge_sort(data, 0, N[i]-1);
+    end = clock();
+    resultTime = (double)(end-start)/CLOCKS_PER_SEC;
+    if(j == 0){
+        double temp = resultTime;
+        resultTime += randomTime.at(3);
+        randomTime.at(3) += temp;
+    }
+    saveRunningTime(3,(i+1)*(j+1)-1,resultTime);
+    //runningTime[3][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
+    printData();
+    // pivot 
+    copy(data_origin.begin(), data_origin.end(), data.begin());
+    printData();          
+    start = clock();
+    cout<<"quick_sort_last"<<'\n';
+    quick_sort_last(0, N[i]-1);
+    end = clock();
+    resultTime = (double)(end-start)/CLOCKS_PER_SEC;
+    if(j == 0){
+        double temp = resultTime;
+        resultTime += randomTime.at(4);
+        randomTime.at(4) += temp;
+    }
+    saveRunningTime(4,(i+1)*(j+1)-1,resultTime);
+    //runningTime[4][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
+    printData();
+            
+    copy(data_origin.begin(), data_origin.end(), data.begin());
+    printData();
+    start = clock();
+    cout<<"quick_sort_median"<<'\n';
+    quick_sort_median(0, N[i]-1);
+    end = clock();
+    resultTime = (double)(end-start)/CLOCKS_PER_SEC;
+    if(j == 0){
+        double temp = resultTime;
+        resultTime += randomTime.at(5);
+        randomTime.at(5) += temp;
+    }
+    saveRunningTime(5,(i+1)*(j+1)-1,resultTime);
+    //runningTime[5][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
+    printData();
+            
+    copy(data_origin.begin(), data_origin.end(), data.begin());
+    printData();
+    start = clock();
+    cout<<"quick_sort_random"<<'\n';
+    quick_sort_random(0, N[i]-1);
+    end = clock();
+    resultTime = (double)(end-start)/CLOCKS_PER_SEC;
+    if(j == 0){
+        double temp = resultTime;
+        resultTime += randomTime.at(6);
+        randomTime.at(6) += temp;
+    }
+    saveRunningTime(6,(i+1)*(j+1)-1,resultTime);
+    //runningTime[6][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
+    printData();   
+}
 void runningTest(){
     for(int i=0; i<T-2; i++) {
        for(int j=0; j<2; j++){
            clock_t start, end; 
            if(j==0){
-                generateRandomData(N[i]);
-                //double result = (double)(end-start)/CLOCKS_PER_SEC;
+                copy(randomTime_origin.begin(), randomTime_origin.end(), randomTime.begin());
+                cout<<"randomTime_origin"<<'\n';
+                for(auto it=randomTime_origin.begin(); it!=randomTime_origin.end(); ++it)
+                    cout<<*it<<" ";
+                cout<<'\n';
+                cout<<"randomTime"<<'\n';
+                for(auto it=randomTime.begin(); it!=randomTime.end(); ++it)
+                    cout<<*it<<" ";
+                cout<<'\n';                
+                for(int k=0; k<3; k++){
+                    generateRandomData(N[i]);
+                    //double result = (double)(end-start)/CLOCKS_PER_SEC;
+                    runSort(i, j);
+
+                }
+                cout<<"runningTime"<<'\n';
+                for(int k=0; k<7; k++){
+                    cout<<runningTime[k][(i+1)*(j+1)-1]<<'\n';
+                }
+                for(int k=0; k<7; k++){
+                    runningTime[k][(i+1)*(j+1)-1] /= 3.0;
+                }
             }
             else{
                 generateReversedData(N[i]);
                 //double result = (double)(end-start)/CLOCKS_PER_SEC;
+                runSort(i, j);
             }
-            data.resize(data_origin.size());
-            copy(data_origin.begin(), data_origin.end(), data.begin());
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';
-            start = clock();
-            cout<<"bubble sort"<<'\n';
-            bubble_sort();
-            end = clock();
-            runningTime[0][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';
-
-            copy(data_origin.begin(), data_origin.end(), data.begin());
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';
-            start = clock();
-            cout<<"selection sort"<<'\n';
-            selection_sort();
-            end = clock();
-            runningTime[1][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';
-
-            copy(data_origin.begin(), data_origin.end(), data.begin());
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';            
-            start = clock();
-            cout<<"insertion sort"<<'\n';
-            insertion_sort();
-            end = clock();
-            runningTime[2][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';
-
-            copy(data_origin.begin(), data_origin.end(), data.begin());
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';            
-            start = clock();
-            cout<<"merge sort"<<'\n';
-            merge_sort(data, 0, N[i]-1);
-            end = clock();
-            runningTime[3][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';
-            // pivot 추
-            copy(data_origin.begin(), data_origin.end(), data.begin());
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';            
-            start = clock();
-            cout<<"quick_sort_last"<<'\n';
-            quick_sort_last(0, N[i]-1);
-            end = clock();
-            runningTime[4][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';
-/*
-            copy(data_origin.begin(), data_origin.end(), data.begin());
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';
-            start = clock();
-            cout<<"quick_sort_first"<<'\n';
-            quick_sort_first(0, N[i]-1);
-            end = clock();
-            runningTime[5][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';
-
-            copy(data_origin.begin(), data_origin.end(), data.begin());
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';
-            start = clock();
-            cout<<"quick_sort_random"<<'\n';
-            quick_sort_random(0, N[i]-1);
-            end = clock();
-            runningTime[6][(i+1)*(j+1)-1] = (double)(end-start)/CLOCKS_PER_SEC;
-            for(auto it=data.begin(); it!=data.end(); ++it)
-                cout<<*it<<" ";
-            cout<<'\n';
-*/
        }
     }
 }
